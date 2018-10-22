@@ -4,6 +4,8 @@
 
 # Update
 update () {
+	#set -o errexit -o pipefail -o noclobber -o nounset
+
 	echo "Updating..."
 	sudo apt-get update
 	echo
@@ -16,10 +18,59 @@ update () {
 	echo "Upgrading distro..."
 	sudo apt-get dist-upgrade
 
-	if test "$1" = "-r"; then
+	! getopt --test > /dev/null 
+	if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
+    		echo "I’m sorry, `getopt --test` failed in this environment."
+    		exit 1
+	fi
+
+	OPTIONS=rs
+	LONGOPTS=autoremove,remove-snaps
+
+	! PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@")
+	if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
+		exit 2
+	fi
+	eval set -- "$PARSED"
+
+	s=n r=n
+
+	while true; do
+	    case "$1" in
+        	-s|--remove-snaps)
+            		s=y
+            		shift
+            		;;
+        	-r|--autoremove)
+            		r=y
+            		shift
+           		 ;;
+        	--)
+            		shift
+            		break
+            		;;
+        	*)
+            		echo "Programming error"
+            		exit 3
+            		;;
+    		esac
+	done
+
+	if test $r = y; then
 		echo
 		echo "Removing useless packages..."
 		sudo apt autoremove
+	fi
+
+	if test $s = y; then
+		echo
+		echo "Removing old snaps..."
+		#set -eu
+
+		snap list --all | awk '/disabled/{print $1, $3}' |
+    			while read snapname revision; do
+        			snap remove "$snapname" --revision="$revision"
+    			done
 	fi
 }
 
