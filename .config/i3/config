@@ -225,6 +225,7 @@ exec --no-startup-id ~/.config/i3/autolock.sh &
 exec --no-startup-id fusuma
 exec --no-startup-id synclient HorizTwoFingerScroll=1
 exec --no-startup-id synclient PalmDetect=1
+exec --no-startup-id synclient PalmMinZ=50
 
 # Theme colors
 client.focused #707880 #1d1f21 #707880 #8c9440 #8c9440
