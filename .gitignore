@@ -1,16 +1,9 @@
-.AndroidStudio3.1/
-.AndroidStudio3.2/
-.CLion2017.3/
-.CLion2018.1/
-.CLion2018.2/
+.AndroidStudio*
+.CLion*
 .ICEauthority
-.IntelliJIdea2017.3/
-.IntelliJIdea2018.1/
-.IntelliJIdea2018.2/
-.PyCharm2017.3/
-.PyCharm2018.1/
-.PyCharm2018.2/
-.Rider2017.3/
+.IntelliJIdea*
+.PyCharm*
+.Rider*
 .Xauthority
 .Xresources
 .android/
@@ -20,6 +13,7 @@
 .bundle/
 .cache/
 .cargo/
+.dbus
 .dmrc
 .duply/
 .eclipse/
@@ -42,6 +36,7 @@
 .npm/
 .octave_hist
 .p2/
+.packettracer
 .pam_environment
 .pki/
 .profile
@@ -71,4 +66,3 @@ Videos
 core
 gdrive.cache
 snap/
-.dbus
