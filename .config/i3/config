@@ -284,13 +284,13 @@ mode "$mode_gaps_outer" {
 bindsym $mod+l exec ~/.config/i3/lock.sh
 
 # volume control
-bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +10% && pactl set-sink-mute 0 0
-bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -10% && pactl set-sink-mute 0 0
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +1% && pactl set-sink-mute 0 0
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -1% && pactl set-sink-mute 0 0
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle
 
 # screen brightness control
-bindsym XF86MonBrightnessUp exec sudo /home/ioana/.config/i3/lcd_bright.sh U 100
-bindsym XF86MonBrightnessDown exec sudo /home/ioana/.config/i3/lcd_bright.sh D 100
+bindsym XF86MonBrightnessUp exec sudo /home/ioana/.config/i3/lcd_bright.sh U 10
+bindsym XF86MonBrightnessDown exec sudo /home/ioana/.config/i3/lcd_bright.sh D 10
 
 # keyboard brightness control
 bindsym XF86KbdBrightnessUp exec sudo /home/ioana/.config/i3/kbd_bright.sh U
