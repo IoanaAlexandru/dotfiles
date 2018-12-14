@@ -67,9 +67,9 @@ update () {
 		echo "Removing old snaps..."
 		#set -eu
 
-		snap list --all | awk '/disabled/{print $1, $3}' |
+		sudo snap list --all | awk '/disabled/{print $1, $3}' |
     			while read snapname revision; do
-        			snap remove "$snapname" --revision="$revision"
+        			sudo snap remove "$snapname" --revision="$revision"
     			done
 	fi
 }
@@ -159,6 +159,9 @@ alias tbz='tar -jxvf'
 # Execute permissions
 alias ax='sudo chmod a+x'
 
+# Useful
+alias ss='gnome-screenshot -i'
+
 #################################### TYPOS ####################################
 
 alias sl='ls'
@@ -166,9 +169,61 @@ alias gti='git'
 
 ################################### MY STUFF ##################################
 
-hw () { cd ~/Documents/Teme/$1 && ls; }
-lab () { cd ~/Documents/Laboratoare/$1 && ls; }
+cdir () {
+	if [ $# -ne 1 ]; then
+		echo "Usage: cdir dir_name";
+		return;
+	fi
+	if ! [ -d $1 ]; then
+                echo -n "Directory $1 does not exist. Create? (y/n) ";
+                x='';
+                read -n1 x;
+                if [[ "$x" != "y" ]]; then
+                        return;
+                fi
+                mkdir $1;
+        fi
+	cd $1 && ls;
+}
+
+hw () {
+	if [ $# -eq 0 ]; then
+		HW_PATH="/home/ioana/Documents/Teme/";
+	elif [ $# -eq 1 ]; then
+		CLASS=${1^^};  # to uppercase
+		HW_PATH="/home/ioana/Documents/Teme/$CLASS/";
+	elif [ $# -eq 2 ]; then
+		CLASS=${1^^};  # to uppercase
+		HW_PATH="/home/ioana/Documents/Teme/$CLASS/Tema$2/";
+	else
+		echo "Usage: hw [class_name [hw_number]]";
+		return;
+	fi
+	cdir $HW_PATH;
+}
+
+lab () {
+	if [ $# -eq 0 ]; then
+		LAB_PATH="/home/ioana/Documents/Laboratoare/";
+	elif [ $# -eq 1 ]; then
+		CLASS=${1^^};  # to uppercase
+		LAB_PATH="/home/ioana/Documents/Laboratoare/$1/";
+	elif [ $# -eq 2 ]; then
+		CLASS=${1^^};  # to uppercase
+		LAB_NR=$2
+		if [ ${#2} -eq 1 ]; then
+			LAB_NR=0$2
+		fi
+		LAB_PATH="/home/ioana/Documents/Laboratoare/$CLASS/lab$LAB_NR/";
+	else
+		echo "Usage: lab [class_name [lab_number]]";
+		return;
+	fi
+	cdir $LAB_PATH;
+}
+
 doc () { cd ~/Documents/$1 && ls; }
+
 dow () { cd ~/Downloads/ && ls; }
 
 ################################### WEBPAGES ##################################
@@ -189,6 +244,7 @@ alias fb='google-chrome https://www.facebook.com & disown'
 alias wapp='google-chrome https://web.whatsapp.com & disown'
 
 # Useful
+alias github='o https://github.com'
 alias gitlab='o https://gitlab.cs.pub.ro'
 alias slack='o https://codettero.slack.com'
 
