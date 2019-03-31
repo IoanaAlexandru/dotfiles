@@ -194,7 +194,11 @@ hw () {
 		HW_PATH="/home/ioana/Documents/Teme/$CLASS/";
 	elif [ $# -eq 2 ]; then
 		CLASS=${1^^};  # to uppercase
-		HW_PATH="/home/ioana/Documents/Teme/$CLASS/Tema$2/";
+		if [ "$CLASS" == "SO" ]; then
+			HW_PATH="/home/ioana/Documents/Teme/$CLASS/l3-so-assignments/$2*"
+		else
+			HW_PATH="/home/ioana/Documents/Teme/$CLASS/Tema$2/";
+		fi
 	else
 		echo "Usage: hw [class_name [hw_number]]";
 		return;
