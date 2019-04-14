@@ -169,6 +169,8 @@ alias gti='git'
 
 ################################### MY STUFF ##################################
 
+zipme () { zip IoanaAlexandru.zip $@; }
+
 cdir () {
 	if [ $# -ne 1 ]; then
 		echo "Usage: cdir dir_name";
