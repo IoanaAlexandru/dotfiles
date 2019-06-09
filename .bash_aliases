@@ -4,8 +4,55 @@
 
 # Update
 update () {
-	#set -o errexit -o pipefail -o noclobber -o nounset
+	set -o errexit -o pipefail -o noclobber -o nounset
 
+	! getopt --test > /dev/null 
+	if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
+			echo "I’m sorry, `getopt --test` failed in this environment."
+			exit 1
+	fi
+
+	OPTIONS=rsb
+	LONGOPTS=autoremove,remove-snaps,backup
+
+	! PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@")
+	if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
+		exit 2
+	fi
+	eval set -- "$PARSED"
+
+	s=n r=n b=n
+
+	while true; do
+		case "$1" in
+			-s|--remove-snaps)
+					s=y
+					shift
+					;;
+			-r|--autoremove)
+					r=y
+					shift
+				 ;;
+			-b|--backup)
+					b=y
+					shift
+				 ;;
+			--)
+					shift
+					break
+					;;
+			*)
+					echo "Programming error"
+					exit 3
+					;;
+			esac
+	done
+
+	if test $b = y; then
+		backup
+		echo
+	fi
+	
 	echo "Updating..."
 	sudo apt-get update
 	echo
@@ -18,44 +65,6 @@ update () {
 	echo "Upgrading distro..."
 	sudo apt-get dist-upgrade
 
-	! getopt --test > /dev/null 
-	if [[ ${PIPESTATUS[0]} -ne 4 ]]; then
-    		echo "I’m sorry, `getopt --test` failed in this environment."
-    		exit 1
-	fi
-
-	OPTIONS=rs
-	LONGOPTS=autoremove,remove-snaps
-
-	! PARSED=$(getopt --options=$OPTIONS --longoptions=$LONGOPTS --name "$0" -- "$@")
-	if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
-		exit 2
-	fi
-	eval set -- "$PARSED"
-
-	s=n r=n
-
-	while true; do
-	    case "$1" in
-        	-s|--remove-snaps)
-            		s=y
-            		shift
-            		;;
-        	-r|--autoremove)
-            		r=y
-            		shift
-           		 ;;
-        	--)
-            		shift
-            		break
-            		;;
-        	*)
-            		echo "Programming error"
-            		exit 3
-            		;;
-    		esac
-	done
-
 	if test $r = y; then
 		echo
 		echo "Removing useless packages..."
@@ -65,19 +74,20 @@ update () {
 	if test $s = y; then
 		echo
 		echo "Removing old snaps..."
-		#set -eu
 
 		sudo snap list --all | awk '/disabled/{print $1, $3}' |
-    			while read snapname revision; do
-        			sudo snap remove "$snapname" --revision="$revision"
-    			done
+				while read snapname revision; do
+					sudo snap remove "$snapname" --revision="$revision"
+				done
 	fi
+
+	set +o errexit +o pipefail +o noclobber +o nounset
 }
 
 # Perform backup
 backup () {
 	export GOOGLE_DRIVE_SETTINGS=~/.duply/gdrive
-	echo "Backing up /home on Google Drive..."
+	echo "Backing up home folder on Google Drive..."
 	duplicity ~ gdocs://ioanaa.alexandru98@gmail.com/LinuxBKP --progress
 }
 
@@ -105,34 +115,34 @@ colors () {
 	IFS=:
 	for SET in $LS_COLORS
 	do
-	    TYPE=$(echo $SET | cut -d"=" -f1)
-	    COLOUR=$(echo $SET | cut -d"=" -f2)
+		TYPE=$(echo $SET | cut -d"=" -f1)
+		COLOUR=$(echo $SET | cut -d"=" -f2)
 
-	    case $TYPE in
-	        no) TEXT="Global default";;
-	        fi) TEXT="Normal file";;
-	        di) TEXT="Directory";;
-	        ln) TEXT="Symbolic link";;
-	        pi) TEXT="Named pipe";;
-	        so) TEXT="Socket";;
-	        do) TEXT="Door";;
-	        bd) TEXT="Block device";;
-	        cd) TEXT="Character device";;
-	        or) TEXT="Orphaned symbolic link";;
-	        mi) TEXT="Missing file";;
-	        su) TEXT="Set UID";;
-	        sg) TEXT="Set GID";;
-	        tw) TEXT="Sticky other writable";;
-	        ow) TEXT="Other writable";;
-	        st) TEXT="Sticky";;
-	        ex) TEXT="Executable";;
-	        rs) TEXT="Reset to \"normal\" color";;
-	        mh) TEXT="Multi-Hardlink";;
-	        ca) TEXT="File with capability";;
-	        *) TEXT="${TYPE}";;
-	    esac
+		case $TYPE in
+			no) TEXT="Global default";;
+			fi) TEXT="Normal file";;
+			di) TEXT="Directory";;
+			ln) TEXT="Symbolic link";;
+			pi) TEXT="Named pipe";;
+			so) TEXT="Socket";;
+			do) TEXT="Door";;
+			bd) TEXT="Block device";;
+			cd) TEXT="Character device";;
+			or) TEXT="Orphaned symbolic link";;
+			mi) TEXT="Missing file";;
+			su) TEXT="Set UID";;
+			sg) TEXT="Set GID";;
+			tw) TEXT="Sticky other writable";;
+			ow) TEXT="Other writable";;
+			st) TEXT="Sticky";;
+			ex) TEXT="Executable";;
+			rs) TEXT="Reset to \"normal\" color";;
+			mh) TEXT="Multi-Hardlink";;
+			ca) TEXT="File with capability";;
+			*) TEXT="${TYPE}";;
+		esac
 
-	    printf "Type: %-10s Colour: %-10s \e[${COLOUR}m${TEXT}\e[0m\n" "${TYPE}" "${COLOUR}"
+		printf "Type: %-10s Colour: %-10s \e[${COLOUR}m${TEXT}\e[0m\n" "${TYPE}" "${COLOUR}"
 	done
 }
 
@@ -159,7 +169,7 @@ alias tbz='tar -jxvf'
 # Execute permissions
 alias ax='sudo chmod a+x'
 
-# Useful
+# Screenshot
 alias ss='gnome-screenshot -i'
 
 #################################### TYPOS ####################################
@@ -177,14 +187,14 @@ cdir () {
 		return;
 	fi
 	if ! [ -d $1 ]; then
-                echo -n "Directory $1 does not exist. Create? (y/n) ";
-                x='';
-                read -n1 x;
-                if [[ "$x" != "y" ]]; then
-                        return;
-                fi
-                mkdir $1;
-        fi
+				echo -n "Directory $1 does not exist. Create? (y/n) ";
+				x='';
+				read -n1 x;
+				if [[ "$x" != "y" ]]; then
+						return;
+				fi
+				mkdir $1;
+		fi
 	cd $1 && ls;
 }
 
