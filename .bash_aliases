@@ -4,6 +4,9 @@
 
 # Update
 update () {
+	# Option parsing courtesy of Robert Siemer on StackOverflow
+	# https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash/29754866
+	
 	set -o errexit -o pipefail -o noclobber -o nounset
 
 	! getopt --test > /dev/null 
@@ -75,6 +78,8 @@ update () {
 		echo
 		echo "Removing old snaps..."
 
+		# Script by Chipaca on StackOverflow
+		# https://askubuntu.com/questions/1036633/how-to-remove-disabled-unused-snap-packages-with-a-single-line-of-command
 		sudo snap list --all | awk '/disabled/{print $1, $3}' |
 				while read snapname revision; do
 					sudo snap remove "$snapname" --revision="$revision"
@@ -105,6 +110,7 @@ alias suexplore='sudo nautilus . & disown'
 
 
 # Script to show the colours used for different file types
+# Source: https://github.com/gkotian/gautam_linux/blob/master/scripts/colours.sh
 colors () {
 	# This is just a more readable version of the 'eval' code at:
 	#     http://askubuntu.com/a/17300/309899
