@@ -10,16 +10,17 @@
 
 MODE=`echo $1 | tr '[a-z]' '[A-Z]'`
 BRIGHTNESS='/sys/class/backlight/intel_backlight/brightness'
-LCDVALUE=`cat $BRIGHTNESS` 
+LCDVALUE=`cat $BRIGHTNESS`
+MAX=7500
 
 if [ "$MODE" = "U" ]
 then
   NEWVALUE=$(( $LCDVALUE + $2 ))
-  if [ $NEWVALUE -le 937 ]
+  if [ $NEWVALUE -le $MAX ]
   then
       echo $NEWVALUE > $BRIGHTNESS
   else
-      echo 937 > $BRIGHTNESS
+      echo $MAX > $BRIGHTNESS
   fi
 else
   NEWVALUE=$(( $LCDVALUE - $2 ))
