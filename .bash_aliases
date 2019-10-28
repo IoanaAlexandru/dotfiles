@@ -60,13 +60,10 @@ update () {
 	sudo apt-get update
 	echo
 	echo "Upgrading..."
-	sudo apt-get upgrade
+	sudo apt full-upgrade
 	echo
 	echo "Removing cache..."
 	sudo apt-get clean
-	echo
-	echo "Upgrading distro..."
-	sudo apt-get dist-upgrade
 
 	if test $r = y; then
 		echo
